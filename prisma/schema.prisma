@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+ 
+}
+
+/* =====
+   ENUMS
+======*/
+
+enum Role {
+  STUDENT
+  TUTOR
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+/* =======
+   USER
+========= */
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  email     String     @unique
+  password  String
+  role      Role
+  status    UserStatus @default(ACTIVE)
+
+  // Relations
+  tutorProfile      TutorProfile?
+  bookingsAsStudent Booking[] @relation("StudentBookings")
+  reviews           Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/* =========
+   TUTOR PROFILE
+============ */
+
+model TutorProfile {
+  id            String  @id @default(uuid())
+  userId        String  @unique
+  bio           String?
+  pricePerHour  Float
+  experience    Int     // years
+  rating        Float   @default(0)
+  totalReviews  Int     @default(0)
+
+  // Relations
+  user         User           @relation(fields: [userId], references: [id])
+  categories   TutorCategory[]
+  availability Availability[]
+  bookings     Booking[]
+  reviews      Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/* =========
+   CATEGORY
+==========*/
+
+model Category {
+  id   String @id @default(uuid())
+  name String @unique
+
+  tutors TutorCategory[]
+}
+
+/* =========
+   TUTOR ↔ CATEGORY
+========== */
+
+model TutorCategory {
+  tutorProfileId String
+  categoryId     String
+
+  tutorProfile TutorProfile @relation(fields: [tutorProfileId], references: [id])
+  category     Category     @relation(fields: [categoryId], references: [id])
+
+  @@id([tutorProfileId, categoryId])
+}
+
+/* =======
+   AVAILABILITY
+========== */
+
+model Availability {
+  id        String   @id @default(uuid())
+  tutorId   String
+  date      DateTime
+  startTime String
+  endTime   String
+  isBooked  Boolean  @default(false)
+
+  tutor TutorProfile @relation(fields: [tutorId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+/* ==========
+   BOOKING
+============ */
+
+model Booking {
+  id              String        @id @default(uuid())
+  studentId       String
+  tutorProfileId  String
+  date            DateTime
+  startTime       String
+  endTime         String
+  status          BookingStatus @default(CONFIRMED)
+
+  // Relations
+  student      User         @relation("StudentBookings", fields: [studentId], references: [id])
+  tutorProfile TutorProfile @relation(fields: [tutorProfileId], references: [id])
+  review       Review?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/* =========
+   REVIEW
+========== */
+
+model Review {
+  id        String @id @default(uuid())
+  bookingId String @unique
+  studentId String
+  tutorId   String
+  rating    Int
+  comment   String?
+
+  booking Booking      @relation(fields: [bookingId], references: [id])
+  student User         @relation(fields: [studentId], references: [id])
+  tutor   TutorProfile @relation(fields: [tutorId], references: [id])
+
+  createdAt DateTime @default(now())
+}
