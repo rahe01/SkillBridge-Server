@@ -1,11 +1,6 @@
 import { prisma } from "../../lib/prisma";
 import { Role, UserStatus } from "../../../generated/prisma/enums";
 
-
-
-
-
-
 const getAllUsers = async () => {
   return prisma.user.findMany({
     select: {
@@ -20,21 +15,15 @@ const getAllUsers = async () => {
   });
 };
 
-
-
-
-
-
 const updateUserStatus = async (
   adminId: string,
   adminRole: Role,
   userId: string,
-  status: UserStatus
+  status: UserStatus,
 ) => {
   if (adminRole !== Role.ADMIN) {
     throw new Error("Only admin can update user status");
   }
-
 
   if (![UserStatus.ACTIVE, UserStatus.BANNED].includes(status)) {
     throw new Error("Invalid user status");
@@ -44,7 +33,7 @@ const updateUserStatus = async (
     where: { id: userId },
   });
 
-  if(user?.status === status){
+  if (user?.status === status) {
     throw new Error(`User is already ${status}`);
   }
 
@@ -67,7 +56,49 @@ const updateUserStatus = async (
   });
 };
 
+const getAllCategories = async () => {
+  return prisma.category.findMany({
+    orderBy: { name: "asc" },
+  });
+};
+
+const createCategory = async (adminRole: Role, name: string) => {
+  if (adminRole !== Role.ADMIN)
+    throw new Error("Only admin can create categories");
+
+  return prisma.category.create({
+    data: { name },
+  });
+};
+
+const updateCategory = async (adminRole: Role, id: string, name: string) => {
+  if (adminRole !== Role.ADMIN)
+    throw new Error("Only admin can update categories");
+
+  const category = await prisma.category.findUnique({ where: { id } });
+  if (!category) throw new Error("Category not found");
+
+  return prisma.category.update({
+    where: { id },
+    data: { name },
+  });
+};
+
+const deleteCategory = async (adminRole: Role, id: string) => {
+  if (adminRole !== Role.ADMIN)
+    throw new Error("Only admin can delete categories");
+
+  const category = await prisma.category.findUnique({ where: { id } });
+  if (!category) throw new Error("Category not found");
+
+  return prisma.category.delete({ where: { id } });
+};
+
 export const AdminService = {
   getAllUsers,
   updateUserStatus,
+  getAllCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
 };
