@@ -4,8 +4,14 @@ import { authenticate } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
+
 router.post("/profile", authenticate, TutorController.upsertProfile);
+router.put("/profile", authenticate, TutorController.upsertProfile);
+
+
 router.post("/availability", authenticate, TutorController.setAvailability);
+
+
 router.get("/", TutorController.getTutors);
 router.get("/:id", TutorController.getTutor);
 

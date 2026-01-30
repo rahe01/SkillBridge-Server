@@ -1,9 +1,10 @@
 import { Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
-/* ======================
-   CREATE / UPDATE PROFILE
-====================== */
+
+
+
+
 const upsertTutorProfile = async (userId: string, payload: any) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -31,7 +32,6 @@ const upsertTutorProfile = async (userId: string, payload: any) => {
       },
     });
 
-    // Handle categories
     if (Array.isArray(categoryIds)) {
       await tx.tutorCategory.deleteMany({
         where: { tutorProfileId: tutorProfile.id },
@@ -51,9 +51,10 @@ const upsertTutorProfile = async (userId: string, payload: any) => {
   });
 };
 
-/* ======================
-   SET AVAILABILITY
-====================== */
+
+
+
+
 const setAvailability = async (userId: string, slots: any[]) => {
   const tutorProfile = await prisma.tutorProfile.findUnique({
     where: { userId },
@@ -63,23 +64,27 @@ const setAvailability = async (userId: string, slots: any[]) => {
     throw new Error("Tutor profile not found");
   }
 
-  const availabilityData = slots.map((slot) => ({
-    tutorId: tutorProfile.id,
-    date: new Date(slot.date),
-    startTime: slot.startTime,
-    endTime: slot.endTime,
-  }));
+  return prisma.$transaction(async (tx) => {
+    
+    await tx.availability.deleteMany({
+      where: { tutorId: tutorProfile.id },
+    });
 
-  await prisma.availability.createMany({
-    data: availabilityData,
+   
+    const data = slots.map((slot) => ({
+      tutorId: tutorProfile.id,
+      date: new Date(slot.date),
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+    }));
+
+    await tx.availability.createMany({ data });
+
+    return { message: "Availability updated successfully" };
   });
-
-  return { message: "Availability added successfully" };
 };
 
-/* ======================
-   GET ALL TUTORS (PUBLIC)
-====================== */
+
 const getAllTutors = async (filters: any) => {
   const { categoryId, minPrice, maxPrice } = filters;
 
@@ -114,9 +119,7 @@ const getAllTutors = async (filters: any) => {
   });
 };
 
-/* ======================
-   GET SINGLE TUTOR
-====================== */
+
 const getTutorById = async (id: string) => {
   const tutor = await prisma.tutorProfile.findUnique({
     where: { id },

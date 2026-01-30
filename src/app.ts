@@ -3,6 +3,8 @@ import cors from "cors";
 import { authRoutes } from "./modules/auth/auth.router";
 import { TutorRoutes } from "./modules/tutor/tutor.router";
 import { BookingRoutes } from "./modules/booking/booking.router";
+import { ReviewRoutes } from "./modules/student/student.router";
+import { AdminRoutes } from "./modules/admin/admin.router";
 
 const app = express();
 
@@ -19,6 +21,9 @@ app.use(express.json());
 app.use("/api/auth/", authRoutes);
 app.use("/api/tutor/" , TutorRoutes);
 app.use("/api/bookings/", BookingRoutes);
+app.use("/api/" , ReviewRoutes);
+app.use("/api/admin", AdminRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("SkillBridge Server is running 🚀");

@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { TutorService } from "./tutor.service";
 
+
+
+
 const upsertProfile = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) throw new Error("Unauthorized");
 
-    const result = await TutorService.upsertTutorProfile(
-      userId,
-      req.body
-    );
+    const result = await TutorService.upsertTutorProfile(userId, req.body);
 
     res.status(200).json({
       success: true,
@@ -24,13 +24,15 @@ const upsertProfile = async (req: Request, res: Response) => {
   }
 };
 
+
+
+
 const setAvailability = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) throw new Error("Unauthorized");
 
     const { slots } = req.body;
-
     if (!Array.isArray(slots)) {
       throw new Error("Slots must be an array");
     }
@@ -49,33 +51,37 @@ const setAvailability = async (req: Request, res: Response) => {
   }
 };
 
+
 const getTutors = async (req: Request, res: Response) => {
-  const filters = {
-    subject: req.query.subject as string | undefined,
-    location: req.query.location as string | undefined,
-    minRate: req.query.minRate
-      ? Number(req.query.minRate)
-      : undefined,
-  };
+  try {
+    const filters = {
+      categoryId: req.query.categoryId as string | undefined,
+      minPrice: req.query.minPrice
+        ? Number(req.query.minPrice)
+        : undefined,
+      maxPrice: req.query.maxPrice
+        ? Number(req.query.maxPrice)
+        : undefined,
+    };
 
-  const tutors = await TutorService.getAllTutors(filters);
+    const tutors = await TutorService.getAllTutors(filters);
 
-  res.status(200).json({
-    success: true,
-    data: tutors,
-  });
+    res.status(200).json({
+      success: true,
+      data: tutors,
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
 };
 
 const getTutor = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
-
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: "Tutor id is required",
-      });
-    }
+    const { id } = req.params;
+    if (!id) throw new Error("Tutor id is required");
 
     const tutor = await TutorService.getTutorById(id as string);
 

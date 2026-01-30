@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { authServices } from "./auth.service";
-import { Role } from "../../../generated/prisma/enums";
+
 
 const createUser = async (req: Request, res: Response) => {
-  console.log("Request body:", req.body); // <-- এটা যোগ করো
+  console.log("Request body:", req.body); 
   try {
     const { name, email, password, role } = req.body;
     if (!name || !email || !password || !role) {

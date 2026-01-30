@@ -58,6 +58,8 @@ const updateBookingStatus = async (req: Request, res: Response) => {
   }
 };
 
+
+
 export const BookingController = {
   createBooking,
   getBookings,
