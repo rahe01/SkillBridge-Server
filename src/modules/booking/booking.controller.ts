@@ -35,7 +35,9 @@ const getBookings = async (req: Request, res: Response) => {
 
 const getBookingById = async (req: Request, res: Response) => {
   try {
-    const booking = await BookingService.getBookingById(req.params.id as string);
+    const booking = await BookingService.getBookingById(
+      req.params.id as string,
+    );
 
     res.status(200).json({ success: true, data: booking });
   } catch (err: any) {
@@ -45,11 +47,11 @@ const getBookingById = async (req: Request, res: Response) => {
 
 const updateBookingStatus = async (req: Request, res: Response) => {
   try {
-    const { status } = req.body; 
+    const { status } = req.body;
     const booking = await BookingService.updateBookingStatus(
       req.params.id as string,
       status as BookingStatus,
-      req.user as {id:string , role:Role}
+      req.user as { id: string; role: Role },
     );
 
     res.status(200).json({ success: true, data: booking });
@@ -57,8 +59,6 @@ const updateBookingStatus = async (req: Request, res: Response) => {
     res.status(400).json({ success: false, message: err.message });
   }
 };
-
-
 
 export const BookingController = {
   createBooking,

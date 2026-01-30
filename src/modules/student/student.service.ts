@@ -3,7 +3,7 @@ import { BookingStatus, Role } from "../../../generated/prisma/enums";
 
 const createReview = async (
   user: { id: string; role: Role },
-  payload: { bookingId: string; rating: number; comment?: string }
+  payload: { bookingId: string; rating: number; comment?: string },
 ) => {
   if (user.role !== Role.STUDENT) {
     throw new Error("Only students can give reviews");
@@ -33,7 +33,6 @@ const createReview = async (
   }
 
   return prisma.$transaction(async (tx) => {
- 
     const review = await tx.review.create({
       data: {
         bookingId: payload.bookingId,
@@ -44,7 +43,6 @@ const createReview = async (
       },
     });
 
-  
     const stats = await tx.review.aggregate({
       where: { tutorId: booking.tutorProfileId },
       _avg: { rating: true },
@@ -63,6 +61,6 @@ const createReview = async (
   });
 };
 
-export const ReviewService = {
+export const StudentService = {
   createReview,
 };

@@ -1,14 +1,9 @@
 import { prisma } from "../../lib/prisma";
 import { BookingStatus, Role } from "../../../generated/prisma/enums";
 
-
-
-
-
 const createBooking = async (studentId: string, payload: any) => {
   const { tutorProfileId, date, startTime, endTime } = payload;
 
- 
   const tutor = await prisma.tutorProfile.findUnique({
     where: { id: tutorProfileId },
     include: { availability: true },
@@ -16,24 +11,21 @@ const createBooking = async (studentId: string, payload: any) => {
 
   if (!tutor) throw new Error("Tutor not found");
 
-
   const slotAvailable = tutor.availability.find(
     (slot) =>
       slot.date.toISOString().split("T")[0] === date &&
       slot.startTime === startTime &&
       slot.endTime === endTime &&
-      !slot.isBooked
+      !slot.isBooked,
   );
 
   if (!slotAvailable) throw new Error("Selected slot is not available");
 
- 
   await prisma.availability.update({
     where: { id: slotAvailable.id },
     data: { isBooked: true },
   });
 
- 
   const booking = await prisma.booking.create({
     data: {
       studentId,
@@ -51,7 +43,6 @@ const createBooking = async (studentId: string, payload: any) => {
 
   return booking;
 };
-
 
 const getBookings = async (userId: string, role: string) => {
   if (role === "STUDENT") {
@@ -71,7 +62,6 @@ const getBookings = async (userId: string, role: string) => {
   }
 };
 
-
 const getBookingById = async (id: string) => {
   const booking = await prisma.booking.findUnique({
     where: { id },
@@ -86,11 +76,10 @@ const getBookingById = async (id: string) => {
   return booking;
 };
 
-
 const updateBookingStatus = async (
   id: string,
   newStatus: BookingStatus,
-  currentUser: { id: string; role: Role }
+  currentUser: { id: string; role: Role },
 ) => {
   const booking = await prisma.booking.findUnique({
     where: { id },
@@ -110,7 +99,7 @@ const updateBookingStatus = async (
     booking.status === BookingStatus.CANCELLED
   ) {
     throw new Error(
-      `Booking is already ${booking.status} and cannot be updated`
+      `Booking is already ${booking.status} and cannot be updated`,
     );
   }
 
@@ -157,10 +146,6 @@ const updateBookingStatus = async (
 
   return updatedBooking;
 };
-
-
-
-
 
 export const BookingService = {
   createBooking,

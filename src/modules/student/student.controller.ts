@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { ReviewService } from "./student.service";
+
 import { Role } from "../../../generated/prisma/enums";
+import { StudentService } from "./student.service";
 
 const createReview = async (req: Request, res: Response) => {
   try {
@@ -12,7 +13,7 @@ const createReview = async (req: Request, res: Response) => {
         role: req.user.role as Role,
     }
 
-    const result = await ReviewService.createReview(user, req.body);
+    const result = await StudentService.createReview(user, req.body);
 
     res.status(201).json({
       success: true,
@@ -27,6 +28,6 @@ const createReview = async (req: Request, res: Response) => {
   }
 };
 
-export const ReviewController = {
+export const StudentController = {
   createReview,
 };
