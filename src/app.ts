@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { authRoutes } from "./modules/auth/auth.router";
+import { TutorRoutes } from "./modules/tutor/tutor.router";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 
 app.use("/api/auth/", authRoutes);
+app.use("/api/tutor/" , TutorRoutes);
 
 app.get("/", (req, res) => {
   res.send("SkillBridge Server is running 🚀");
