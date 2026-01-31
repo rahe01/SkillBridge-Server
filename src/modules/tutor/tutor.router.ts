@@ -13,7 +13,8 @@ router.post("/availability", authenticate, TutorController.setAvailability);
 
 
 router.get("/", TutorController.getTutors);
-router.get("/:id", TutorController.getTutor);
 router.get("/featured", TutorController.getFeaturedTutor);
+router.get("/:id", TutorController.getTutor);
+
 
 export const TutorRoutes = router;

@@ -86,38 +86,39 @@ const setAvailability = async (userId: string, slots: any[]) => {
 
 
 const getAllTutors = async (filters: any) => {
-  const { categoryId, minPrice, maxPrice } = filters;
+  const { categoryId, minPrice, maxPrice, rating } = filters;
 
   const priceFilter: any = {};
   if (minPrice !== undefined) priceFilter.gte = Number(minPrice);
   if (maxPrice !== undefined) priceFilter.lte = Number(maxPrice);
 
-  return prisma.tutorProfile.findMany({
+  const ratingFilter: any = {};
+  if (rating !== undefined) ratingFilter.gte = Number(rating);
+
+  const tutors = await prisma.tutorProfile.findMany({
     where: {
-      ...(Object.keys(priceFilter).length > 0 && {
-        pricePerHour: priceFilter,
-      }),
-      ...(categoryId && {
-        categories: {
-          some: { categoryId },
-        },
-      }),
+      ...(Object.keys(priceFilter).length > 0 && { pricePerHour: priceFilter }),
+      ...(Object.keys(ratingFilter).length > 0 && { rating: ratingFilter }),
+      ...(categoryId
+        ? {
+            categories: {
+              some: { categoryId },
+            },
+          }
+        : {}),
     },
     include: {
       user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
+        select: { id: true, name: true, email: true },
       },
-      categories: {
-        include: { category: true },
-      },
+      categories: { include: { category: true } },
       reviews: true,
     },
   });
+
+  return tutors;
 };
+
 
 
 const getTutorById = async (id: string) => {
@@ -160,6 +161,8 @@ const getFeaturedTutors = async () => {
     },
     take:6
   })
+
+  return tutors;
 
 
 
