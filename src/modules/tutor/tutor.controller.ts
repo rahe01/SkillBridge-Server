@@ -97,9 +97,29 @@ const getTutor = async (req: Request, res: Response) => {
   }
 };
 
+
+
+const getFeaturedTutor = async (req: Request, res: Response) => {
+  try {
+    
+
+    const tutor = await TutorService.getFeaturedTutors();
+
+    res.status(200).json({
+      success: true,
+      data: tutor,
+    });
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 export const TutorController = {
   upsertProfile,
   setAvailability,
   getTutors,
   getTutor,
+  getFeaturedTutor
 };

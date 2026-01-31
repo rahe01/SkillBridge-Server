@@ -140,9 +140,37 @@ const getTutorById = async (id: string) => {
   return tutor;
 };
 
+
+
+const getFeaturedTutors = async () => {
+
+  const tutors = await prisma.tutorProfile.findMany({
+    where:{
+      experience:{
+        gte:5
+      }
+    },
+
+    include:{
+      user:true,
+      categories:{
+        include:{category:true}
+      }
+     
+    },
+    take:6
+  })
+
+
+
+
+
+}
+
 export const TutorService = {
   upsertTutorProfile,
   setAvailability,
   getAllTutors,
   getTutorById,
+  getFeaturedTutors
 };

@@ -14,5 +14,6 @@ router.post("/availability", authenticate, TutorController.setAvailability);
 
 router.get("/", TutorController.getTutors);
 router.get("/:id", TutorController.getTutor);
+router.get("/featured", TutorController.getFeaturedTutor);
 
 export const TutorRoutes = router;
