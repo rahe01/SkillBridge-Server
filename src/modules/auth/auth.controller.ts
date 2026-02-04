@@ -50,24 +50,8 @@ const loginUser = async (req: Request, res: Response) => {
 
 
 
-const getMe = async(req:Request , res: Response) =>{
-  try{
-    const user = req.user;
-
-    res.status(200).json({
-      success:true,
-      message:"Current user fetched successfully",
-      data:user,
-    })
-  }catch(err:any){
-    res.status(500).json({
-      success:false,
-      message:err.message,
-    })
-  }
-}
 
 
 
 
-export const authController = { createUser, loginUser , getMe};
+export const authController = { createUser, loginUser ,};

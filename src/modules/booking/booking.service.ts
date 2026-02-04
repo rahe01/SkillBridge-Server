@@ -93,7 +93,6 @@ const updateBookingStatus = async (
     throw new Error("Booking not found");
   }
 
-  // ❌ Final state হলে আর update নয়
   if (
     booking.status === BookingStatus.COMPLETED ||
     booking.status === BookingStatus.CANCELLED
@@ -103,7 +102,6 @@ const updateBookingStatus = async (
     );
   }
 
-  // 👨‍🎓 STUDENT → only CANCELLED (own booking)
   if (currentUser.role === Role.STUDENT) {
     if (newStatus !== BookingStatus.CANCELLED) {
       throw new Error("Student can only cancel a booking");
@@ -112,9 +110,18 @@ const updateBookingStatus = async (
     if (booking.studentId !== currentUser.id) {
       throw new Error("Students can only cancel their own bookings");
     }
+
+    await prisma.availability.updateMany({
+      where: {
+        tutorId: booking.tutorProfile.id,
+        date: booking.date,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+      },
+      data: { isBooked: false },
+    });
   }
 
-  // 👨‍🏫 TUTOR → only COMPLETED (own booking)
   if (currentUser.role === Role.TUTOR) {
     if (newStatus !== BookingStatus.COMPLETED) {
       throw new Error("Tutor can only complete a booking");
@@ -124,8 +131,6 @@ const updateBookingStatus = async (
       throw new Error("Tutors can only complete their own bookings");
     }
   }
-
-  // 👑 ADMIN → full access (no extra check needed)
 
   if (
     currentUser.role !== Role.ADMIN &&
