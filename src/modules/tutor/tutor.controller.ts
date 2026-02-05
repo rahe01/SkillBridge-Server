@@ -116,10 +116,30 @@ const getFeaturedTutor = async (req: Request, res: Response) => {
     });
   }
 };
+
+const getBookedSessions = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) throw new Error("Unauthorized");
+
+    const sessions = await TutorService.getTutorBookedSessions(userId);
+
+    res.status(200).json({
+      success: true,
+      data: sessions,
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 export const TutorController = {
   upsertProfile,
   setAvailability,
   getTutors,
   getTutor,
-  getFeaturedTutor
+  getFeaturedTutor,
+  getBookedSessions
 };

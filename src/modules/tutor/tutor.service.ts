@@ -170,10 +170,41 @@ const getFeaturedTutors = async () => {
 
 }
 
+const getTutorBookedSessions = async (userId: string) => {
+  
+  const tutorProfile = await prisma.tutorProfile.findUnique({
+    where: { userId },
+  });
+
+  if (!tutorProfile) {
+    throw new Error("Tutor profile not found");
+  }
+
+  const sessions = await prisma.booking.findMany({
+    where: { tutorProfileId: tutorProfile.id },
+    include: {
+      student: { select: { id: true, name: true, email: true } },
+      review: true,
+    },
+    orderBy: { date: "asc" },
+  });
+
+  return sessions.map((s) => ({
+    id: s.id,
+    date: s.date,
+    startTime: s.startTime,
+    endTime: s.endTime,
+    status: s.status,
+    student: s.student,
+    review: s.review,
+  }));
+};
+
 export const TutorService = {
   upsertTutorProfile,
   setAvailability,
   getAllTutors,
   getTutorById,
-  getFeaturedTutors
+  getFeaturedTutors,
+  getTutorBookedSessions
 };

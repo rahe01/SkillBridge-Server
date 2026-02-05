@@ -16,5 +16,5 @@ router.get("/", TutorController.getTutors);
 router.get("/featured", TutorController.getFeaturedTutor);
 router.get("/:id", TutorController.getTutor);
 
-
+router.get("/sessions/booked", authenticate, TutorController.getBookedSessions);
 export const TutorRoutes = router;
