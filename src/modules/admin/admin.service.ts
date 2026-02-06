@@ -94,6 +94,44 @@ const deleteCategory = async (adminRole: Role, id: string) => {
   return prisma.category.delete({ where: { id } });
 };
 
+
+const getAllBookings = async () => {
+  return prisma.booking.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      student: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      tutorProfile: {
+        select: {
+          id: true,
+          pricePerHour: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+      review: {
+        select: {
+          rating: true,
+          comment: true,
+        },
+      },
+    },
+  });
+};
+
+
 export const AdminService = {
   getAllUsers,
   updateUserStatus,
@@ -101,4 +139,5 @@ export const AdminService = {
   createCategory,
   updateCategory,
   deleteCategory,
+  getAllBookings
 };

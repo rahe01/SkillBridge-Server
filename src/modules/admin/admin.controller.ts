@@ -121,7 +121,27 @@ const deleteCategory = async (req: Request, res: Response) => {
     res.status(400).json({ success: false, message: err.message });
   }
 };
+const getAllBookings = async (req: Request, res: Response) => {
+  try {
+    const admin = req.user;
 
+    if (!admin || admin.role !== Role.ADMIN) {
+      throw new Error("Unauthorized");
+    }
+
+    const bookings = await AdminService.getAllBookings();
+
+    res.status(200).json({
+      success: true,
+      data: bookings,
+    });
+  } catch (err: any) {
+    res.status(403).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 
 
@@ -132,4 +152,5 @@ export const AdminController = {
   createCategory,
   updateCategory,
   deleteCategory,
+  getAllBookings
 };

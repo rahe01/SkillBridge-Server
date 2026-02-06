@@ -17,4 +17,8 @@ router.post("/categories", authenticate, AdminController.createCategory);
 router.put("/categories/:id", authenticate, AdminController.updateCategory);
 router.delete("/categories/:id", authenticate, AdminController.deleteCategory);
 
+
+router.get("/bookings", authenticate, AdminController.getAllBookings);
+
+
 export const AdminRoutes = router;
