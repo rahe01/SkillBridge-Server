@@ -20,5 +20,11 @@ router.delete("/categories/:id", authenticate, AdminController.deleteCategory);
 
 router.get("/bookings", authenticate, AdminController.getAllBookings);
 
+router.get(
+  "/dashboard-stats",
+  authenticate,
+  AdminController.getDashboardStats
+);
+
 
 export const AdminRoutes = router;

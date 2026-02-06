@@ -145,6 +145,26 @@ const getAllBookings = async (req: Request, res: Response) => {
 
 
 
+const getDashboardStats = async (req: Request, res: Response) => {
+  try {
+    // from auth middleware
+
+    const stats = await AdminService.getAdminDashboardStats();
+
+    res.status(200).json({
+      success: true,
+      message: "Admin dashboard statistics fetched successfully",
+      data: stats,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
 export const AdminController = {
   getAllUsers,
   updateUserStatus,
@@ -152,5 +172,6 @@ export const AdminController = {
   createCategory,
   updateCategory,
   deleteCategory,
-  getAllBookings
+  getAllBookings,
+  getDashboardStats
 };

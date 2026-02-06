@@ -132,6 +132,93 @@ const getAllBookings = async () => {
 };
 
 
+const getAdminDashboardStats = async () => {
+  
+
+  const [
+    totalUsers,
+    totalStudents,
+    totalTutors,
+    activeUsers,
+    bannedUsers,
+    totalCategories,
+    totalTutorProfiles,
+    totalBookings,
+    bookingStats,
+    totalReviews,
+    avgRating,
+    recentBookings,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({ where: { role: Role.STUDENT } }),
+    prisma.user.count({ where: { role: Role.TUTOR } }),
+    prisma.user.count({ where: { status: "ACTIVE" } }),
+    prisma.user.count({ where: { status: "BANNED" } }),
+    prisma.category.count(),
+    prisma.tutorProfile.count(),
+    prisma.booking.count(),
+
+    prisma.booking.groupBy({
+      by: ["status"],
+      _count: { status: true },
+    }),
+
+    prisma.review.count(),
+
+    prisma.review.aggregate({
+      _avg: {
+        rating: true,
+      },
+    }),
+
+    prisma.booking.count({
+      where: {
+        createdAt: {
+          gte: new Date(
+            new Date().setDate(new Date().getDate() - 7)
+          ),
+        },
+      },
+    }),
+  ]);
+
+  const bookingStatusCount = {
+    CONFIRMED: 0,
+    COMPLETED: 0,
+    CANCELLED: 0,
+  };
+
+  bookingStats.forEach((item) => {
+    bookingStatusCount[item.status] = item._count.status;
+  });
+
+  return {
+    users: {
+      total: totalUsers,
+      students: totalStudents,
+      tutors: totalTutors,
+      active: activeUsers,
+      banned: bannedUsers,
+    },
+    tutors: {
+      totalProfiles: totalTutorProfiles,
+      averageRating: avgRating._avg.rating ?? 0,
+    },
+    categories: {
+      total: totalCategories,
+    },
+    bookings: {
+      total: totalBookings,
+      byStatus: bookingStatusCount,
+      last7Days: recentBookings,
+    },
+    reviews: {
+      total: totalReviews,
+    },
+  };
+};
+
+
 export const AdminService = {
   getAllUsers,
   updateUserStatus,
@@ -139,5 +226,6 @@ export const AdminService = {
   createCategory,
   updateCategory,
   deleteCategory,
-  getAllBookings
+  getAllBookings,
+   getAdminDashboardStats,
 };
