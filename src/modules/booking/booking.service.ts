@@ -1,5 +1,6 @@
+import { BookingStatus, Role } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
-import { BookingStatus, Role } from "../../../generated/prisma/enums";
+
 
 const createBooking = async (studentId: string, payload: any) => {
   const { tutorProfileId, date, startTime, endTime } = payload;

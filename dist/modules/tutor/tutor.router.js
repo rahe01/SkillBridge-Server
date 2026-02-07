@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { TutorController } from "./tutor.controller";
+import { authenticate } from "../../middlewares/auth.middleware";
+const router = Router();
+router.post("/profile", authenticate, TutorController.upsertProfile);
+router.put("/profile", authenticate, TutorController.upsertProfile);
+router.post("/availability", authenticate, TutorController.setAvailability);
+router.get("/", TutorController.getTutors);
+router.get("/featured", TutorController.getFeaturedTutor);
+router.get("/:id", TutorController.getTutor);
+router.get("/sessions/booked", authenticate, TutorController.getBookedSessions);
+export const TutorRoutes = router;

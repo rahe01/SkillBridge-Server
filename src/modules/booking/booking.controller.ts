@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { BookingService } from "./booking.service";
-import { BookingStatus, Role } from "../../../generated/prisma/enums";
+import { BookingStatus, Role } from "../../generated/prisma/enums";
+
 
 const createBooking = async (req: Request, res: Response) => {
   try {

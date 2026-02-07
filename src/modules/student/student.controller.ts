@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 
-import { Role } from "../../../generated/prisma/enums";
+
 import { StudentService } from "./student.service";
+import { Role } from "../../generated/prisma/enums";
 
 const createReview = async (req: Request, res: Response) => {
   try {

@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import config from "../../config";
+import { Role, UserStatus } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
-import { Role, UserStatus } from "../../../generated/prisma/enums";
+import config from "../../config";
+
 
 export const createUser = async (payload: {
   name: string;
