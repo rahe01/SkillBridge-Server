@@ -1,4 +1,3 @@
-// src/server.ts
 import "dotenv/config";
 import app from "./app";
 import { prisma } from "./lib/prisma";
@@ -10,9 +9,12 @@ async function main() {
     await prisma.$connect();
     console.log("✅ Connected to database");
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
-    });
+    if (process.env.NODE_ENV !== "production") {
+      // Local server run only
+      app.listen(PORT, () => {
+        console.log(`🚀 Server running at http://localhost:${PORT}`);
+      });
+    }
   } catch (error) {
     console.error("❌ Failed to start server:", error);
     await prisma.$disconnect();
@@ -21,3 +23,6 @@ async function main() {
 }
 
 main();
+
+// Export app for serverless platforms
+export default app;

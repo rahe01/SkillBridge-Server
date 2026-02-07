@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Application } from "express";
 import cors from "cors";
 import { authRoutes } from "./modules/auth/auth.router";
 import { TutorRoutes } from "./modules/tutor/tutor.router";
@@ -7,33 +7,43 @@ import { ReviewRoutes } from "./modules/student/student.router";
 import { AdminRoutes } from "./modules/admin/admin.router";
 import { userRoutes } from "./modules/user/user.router";
 
-const app = express();
+const app: Application = express();
 
+// Configure CORS
+const allowedOrigins = [
+  process.env.APP_URL || "http://localhost:3000",
+  process.env.PROD_APP_URL,
+  "http://localhost:3000",
+  "http://localhost:4000",
+  "http://localhost:5000",
+].filter(Boolean);
 
-app.use(cors({
-  origin: process.env.APP_URL || "http://localhost:3000",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
+    credentials: true,
+  }),
+);
 
+app.use(express.json());
 
-app.use(express.json());  
-
-
+// Routes
 app.use("/api/auth/", authRoutes);
-app.use("/api/tutor/" , TutorRoutes);
+app.use("/api/tutor/", TutorRoutes);
 app.use("/api/bookings/", BookingRoutes);
-app.use("/api/" , ReviewRoutes);
+app.use("/api/", ReviewRoutes);
 app.use("/api/admin", AdminRoutes);
-app.use("/api/users/" , userRoutes)
+app.use("/api/users/", userRoutes);
 
+// Root endpoint
 app.get("/", (req, res) => {
   res.send("SkillBridge Server is running 🚀");
 });
 
-app.post("/test", (req, res) => {
-  console.log(req.body);
-  res.send("ok");
-});
 
 
 export default app;
