@@ -1224,10 +1224,7 @@ var userRoutes = router6;
 var app = express();
 var allowedOrigins = [
   process.env.APP_URL || "http://localhost:3000",
-  process.env.PROD_APP_URL,
-  "http://localhost:3000",
-  "http://localhost:4000",
-  "http://localhost:5000"
+  "https://skillbridge-frontend-omega.vercel.app"
 ].filter(Boolean);
 app.use(
   cors({
